@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8" />
+	<title>HEAL - Health Care HTML Template </title>
+	<meta name="description" content="" />
+	<meta name="author" content="" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+	<!-- Google webfont include -->
+	<link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700|Source+Sans+Pro:400,700' rel='stylesheet' type='text/css' />
+	<!-- BEGIN SCRIPT INCLUDE -->
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/nivo-slider.js"></script>
+	<script type="text/javascript" src="js/general.js"></script>
+	<script type="text/javascript" src="js/bxslider.js"></script>
+	<script type="text/javascript" src="js/ztwitterfeed.js"></script>
+	<script type="text/javascript" src="js/jflickrfeed.js"></script>
+	<script type="text/javascript" src="js/lightbox.js"></script>
+	<script type="text/javascript" src="js/jqueryui.js"></script>
+	<!-- END SCRIPT INCLUDE -->
+	<!-- BEGIN STYLE INCLUDE -->
+	<link rel="stylesheet" type="text/css" href="css/style.css" />
+	<!-- END STYLE INCLUDE -->
+	<link rel="shortcut icon" href="favicon.ico" />
+	<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCbEJ826CbvSGwFTtO-KTWoowpdn3GxF50&sensor=true"></script>
+	<style type="text/css">
+		.done {
+			font-family:"Droid Sans", "Arial", sans-serif;
+			margin:20px auto; 
+			display:none;
+			line-height:23px;
+			color:#5D5D5D;
+			font-size:1.2em;
+		}
+		.hightlight {
+			border:2px solid #cf5555 !important;
+		}
+	</style>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			//if submit button is clicked
+			
+			$('#submit-button').click(function () {        
+
+				//Get the data from all the fields
+				var name = $('input[name=name]');
+				var email = $('input[name=email]');
+				var phone = $('input[name=phone]');
+				var symptoms = $('textarea[name=symptoms]');
+				var method = $('input[name=prefered_method]:checked');
+				var department = $('#app-department');
+				var month = $('#app-month');
+				var day = $('#app-day');
+				var addictional = $('#add-info');
+				
+				//Simple validation to make sure user entered something
+				//If error found, add hightlight class to the text field
+				if (name.val()=='') {
+					name.addClass('hightlight');
+					return false;
+				} else name.removeClass('hightlight');
+				
+				if (typeof method.val() === 'undefined') {
+					$("#prefered_method").addClass('hightlight').css('padding','4px');
+					return false;
+				} else $("#prefered_method").removeClass('hightlight').css('padding','0px');
+				
+				if ( $("#form-email-wrap").css('display') == "block") {
+					if (email.val()=='') {	
+						email.addClass('hightlight');
+						return false;
+					} else email.removeClass('hightlight');
+				}
+				
+				if ( $("#form-telephone-wrap").css('display') == "block") {
+					if (phone.val()=='') {	
+						phone.addClass('hightlight');
+						return false;
+					} else phone.removeClass('hightlight');
+				}
+				
+				if (department.val()== 'Select Department ...') {	
+					department.addClass('hightlight');
+					return false;
+				} else department.removeClass('hightlight');
+				
+				if (month.val()== 'Month') {	
+					month.addClass('hightlight');
+					return false;
+				} else month.removeClass('hightlight');
+				
+				if (day.val()== 'Day') {	
+					day.addClass('hightlight');
+					return false;
+				} else day.removeClass('hightlight');
+				
+				if ( symptoms.val()=='' ) {
+					symptoms.addClass('hightlight');
+					return false;
+				} else symptoms.removeClass('hightlight');
+         
+				//organize the data properly
+				var data = 'name=' + name.val();
+				if ( email.val() != '' ) {
+					data += '&email=' + email.val();
+				}
+				if ( phone.val() != '' ) {
+					data += '&phone=' + phone.val();
+				}				
+				data += '&symptoms=' + encodeURIComponent(symptoms.val()) + '&department=' + department.val() + '&month=' + month.val() + '&day=' + day.val();
+				if ( addictional.val() != '' ) {
+					data += '&addictional=' + encodeURIComponent(addictional.val());
+				}
+         
+				//disabled all the text fields
+				$('.text').attr('disabled','true');
+
+				//show the loading sign
+				$('.loading').show();
+         
+				//start the ajax
+				$.ajax({
+					//this is the php file that processes the data and send mail
+					url: "appointment.php", 
+             
+					//GET method is used
+					type: "GET",
+	
+					//pass the data         
+					data: data,     
+             
+					//Do not cache the page
+					cache: false,
+             
+					//success
+					success: function (html) {              
+						//if appointment.php returned 1/true (send mail success)
+						if (html==1) {                  
+							//hide the form
+							$('form').fadeOut('slow');                 
+							$('.form-intro-text').fadeOut('slow');
+							//show the success message
+							$('.done').fadeIn('slow');
+                     
+							//if appointment.php returned 0/false (send mail failed)
+						} else alert('Sorry, unexpected error. Please try again later.');               
+					}       
+				});
+         
+				//cancel the submit button default behaviours
+				return false;
+			}); 
+		}); 
+	</script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+<body id="to-top">
+	<!-- BEGIN HEADER -->
+	<header>
+		<div id="header">
+			<div class="container">
+				<div class="two columns" id="logo-wrap">
+					<a href="index.html"><div id="logo"></div></a>
+					<select id="header-mobile-menu">
+						<option value="index.html" />Home
+						<option value="blog.html" />Blog
+							<option value="blog.html" />--Right Sidebar
+							<option value="blog-left.html" />--Left Sidebar
+							<option value="blog-fullwidth.html" />--Without Sidebar
+							<option value="single.html" />--Single Post
+						
+						<option value="gallery.html" />Gallery
+							<option value="gallery.html" />--With Text
+							<option value="gallery-without-text.html" />--Without Text
+							<option value="gallery-sidebar.html" />--With Sidebar
+						
+						<option value="pages.html" />Pages
+							<option value="pages.html" />--With Right Sidebar
+							<option value="pages-left-sidebar.html" />--With Left Sidebar
+							<option value="pages-fullwidth.html" />--Without Sidebar
+							<option value="404.html" />--404
+						
+						<option value="columns.html" />Shortcodes
+							<option value="columns.html" />--Columns
+							<option value="buttons.html" />--Buttons
+							<option value="tables.html" />--Tables
+							<option value="widget.html" />--Widget
+							<option value="messagebox.html" />--Message Box
+						
+						<option value="contact.html" />Contact Us
+							<option value="contact.html" />--Contact Form
+							<option value="appointment.html" />--Online Appointment
+								
+					</select>
+				</div>
+				<div class="fourteen columns">
+					<nav>
+						<ul id="menu-header-menu" class="menu">
+							<li><a href="index.html">Home</a></li>
+							<li><a href="blog.html">Blog</a>
+								<ul class="sub-menu">
+									<li class="triangle"><img src="images/triangle.png" /></li>
+									<li><a href="blog.html">Right Sidebar</a></li>
+									<li><a href="blog-left.html">Left Sidebar</a></li>
+									<li><a href="blog-fullwidth.html">Without Sidebar</a></li>
+									<li><a href="single.html">Single Post</a></li>
+								</ul>
+							</li>
+							<li><a href="gallery.html">Gallery</a>
+								<ul class="sub-menu">
+									<li class="triangle"><img src="images/triangle.png" /></li>
+									<li><a href="gallery.html">With Text</a></li>
+									<li><a href="gallery-without-text.html">Without Text</a></li>
+									<li><a href="gallery-sidebar.html">With Sidebar</a></li>
+								</ul>
+							</li>
+							<li><a href="pages.html">Pages</a>
+								<ul class="sub-menu">
+									<li class="triangle"><img src="images/triangle.png" /></li>
+									<li><a href="pages.html">With Right Sidebar</a></li>
+									<li><a href="pages-left-sidebar.html">With Left Sidebar</a></li>
+									<li><a href="pages-fullwidth.html">Without Sidebar</a></li>
+									<li><a href="404.html">404 Page</a></li>
+								</ul>
+							</li>
+							<li><a href="columns.html">Shortcodes</a>
+								<ul class="sub-menu">
+									<li class="triangle"><img src="images/triangle.png" /></li>
+									<li><a href="columns.html">Columns</a></li>
+									<li><a href="buttons.html">Buttons</a></li>
+									<li><a href="tables.html">Tables</a></li>
+									<li><a href="widget.html">Widget</a></li>
+									<li><a href="messagebox.html">Message Box</a></li>
+								</ul>
+							</li><li><a href="contact.html">Contact Us</a>
+								<ul class="sub-menu">
+									<li class="triangle"><img src="images/triangle.png" /></li>
+									<li><a href="contact.html">Contact Form</a></li>
+									<li><a href="appointment.html">Online Appointment</a></li>
+								</ul>
+							</li>
+						</ul>				
+					</nav>
+				</div>
+				<br class="clear" />
+				<div class="four columns">
+					<div id="telephone-wrap"><span id="header-telephone">+474-7457-3749</span><span id="header-email">example@mail.com</span></div>
+				</div>
+				<div class="ten columns" id="intro-text">
+					<div>Hello, this is <span class="blue-color">HEAL</span> - Premium ThemeForest Health Care Theme. After purchase you may change this text on whatever you want. </div>
+					<div id="intro-author">Raybreaker, Theme Author</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	<!-- END HEADER -->
+	<!-- BEGIN MAIN CONTENT -->
+	<div id="page-title-wrap">
+		<div class="container">
+			<div id="breadcrumb"><a href="index.html">Home</a> &gt; <a href="appointment.html">Online Appointment</a></div>
+			<div id="page-title">Online Appointment</div>
+			<div id="page-subtitle">Donec eget nisl libero. In tincidunt mauris id tellus interdum non commodo nisl ultrices. Duis sollicitudin sapien et est condimentum ornare.</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="twelve columns left-content contact-page">
+			<h1>Request an Appointment</h1>
+			<div id="visit-us-text">Please complete the following form to the best of your knowledge. After completing and submitting this form, one of our specialists will contact you the next business day after receiving your request. <br /><br />You also may decide that you prefer to speak with one of our specialists directly right now, if so please call us: <b>474-7457-3749</b>, between <b>9:00 AM and 6:00 PM</b>.</div>
+			
+			<div id="appointment-form"> 
+				<div class="done">
+					<b>Thank you !</b> We have received your message. 
+				</div>
+				<form action="appointment.php" method="POST" />
+					<label for="name">Name <span>*</span></label>
+					<input type="text" name="name" id="name" />
+					<label for="prefered_method">Prefered contact method <span>*</span></label>
+					<span id="prefered_method">
+						<input type="radio" value="email" name="prefered_method" id="prefered_email" />
+						<label for="prefered_email" class="radio-label">Email</label>
+						<input type="radio" value="telephone" name="prefered_method" id="prefered_phone" />	
+						<label for="prefered_phone" class="radio-label">Telephone</label>
+					</span>
+					<div id="form-email-wrap">
+						<label for="email">Email <span>*</span></label>
+						<input type="text" name="email" id="email" />
+					</div>
+					<div id="form-telephone-wrap">
+						<label for="first_name">Telephone <span>*</span></label>
+						<input type="text" name="phone" id="phone" />
+					</div>
+					<label for="app-department" id="department-top">Department <span>*</span></label>
+					<select name='app-department' id='app-department'>
+						<option selected="selected" />Select Department ...
+						<option />Allergy
+						<option />Cancer Center
+						<option />Cardiology
+						<option />Dentistry
+						<option />Family Medicine
+						<option />Neurology
+						<option />Pediatric
+						<option />Plastic Surgery
+					</select>
+					<label for="app-month">Date <span>*</span></label>
+					<select name='app-month' id='app-month'>
+						<option />Month
+						<option />January
+						<option />February
+						<option />March
+						<option />April
+						<option />May
+						<option />June
+						<option />July
+						<option />August
+						<option />September
+						<option />October
+						<option />November
+						<option />December
+					</select>
+					<select name='app-day' id='app-day'>
+						<option />Day
+						<option />1
+						<option />2
+						<option />3
+						<option />4
+						<option />5
+						<option />6
+						<option />7
+						<option />8
+						<option />9
+						<option />10
+						<option />11
+						<option />12
+						<option />13
+						<option />14
+						<option />15
+						<option />16
+						<option />17
+						<option />18
+						<option />19
+						<option />20
+						<option />21
+						<option />22
+						<option />23
+						<option />24
+						<option />25
+						<option />26
+						<option />27
+						<option />28
+						<option />29
+						<option />30
+						<option />31
+					</select>
+					<br class="clear" />
+					<label for="symptoms">Symptoms and reason for appointment <span>*</span></label>
+					<textarea name="symptoms" id="symptoms"></textarea>
+					<label for="add_info">Addictional Information</label>
+					<textarea name="add-info" id="add-info"></textarea>
+					<input type="submit" id="submit-button" value="Submit" />
+					<div class="bg-book"></div>
+				</form>
+			</div>
+		</div>
+		<div class="four columns right-content">
+			<div class="sidebar-header">Contact Us</div>
+			<p id="pre-method-text">You also can easily contact us through following methods:</p>
+			<ul id="contact-method">
+				<li id="contact-telephone">(telephone:) <br /><span>+474-7457-3749</span></li>
+				<li id="contact-email">(email:) <br /><span>example@mail.com</span></li>
+				<li id="contact-skype">(skype:) <br /><span>skypeusername</span></li>
+			</ul>
+			<div class="sidebar-header">About Us</div>
+			<div id="aboutus-sidebar">
+				<p>Donec velit nisl, rhoncus a elementum ac, tempus vel felis. Vestibulum ac quam vel libero auctor vehicula eget ut mauris.</p>
+				<p>Morbi ornare imperdiet interdum. Nullam pulvinar malesuada elementum. Morbi eu massa sed orci condimentum venenatis a vitae velit. Donec tincidunt justo ut lacus mollis convallis.</p>
+			</div>
+			<div class="sidebar-header">Last Post in Blog</div>
+			<ul id="blog-post-sidebar">
+				<li><a href="single.html">Vestibulum ac quam vel</a><br /><span>by David Baker</span></li>
+				<li><a href="single.html">Duis ullamcorper ipsum</a><br /><span>by John Smith</span></li>
+				<li><a href="single.html">Post without image</a><br /><span>by Thomas Stark</span></li>
+				<li><a href="single.html">Post without image</a><br /><span>by Thomas Stark</span></li>
+			</ul>
+			<div class="sidebar-header">Flickr Feed</div>
+			<ul id="flickr-feed"></ul>
+		</div>
+		</div>
+	
+	<!-- END MAIN CONTENT -->
+	<!-- BEGIN FOOTER -->
+	<footer>
+		<div id="footer">
+			<div id="prefooter-line"></div>
+			<div class="container">
+				<div class="five columns" id="tweet-feed-wrap">
+					<div id="twitter-feed-header">Twitter Feed</div>
+					<div id="tweet-feed"></div>
+				</div>
+				<div class="six columns" id="mail-subscribe-wrap">
+					<div id="twitter-feed-header">Stay Tuned</div>
+					<div id="mail-subscribe-text">Subscribe to our email newsletter for interesting information and news, sent out every month.</div>
+					<!-- Begin MailChimp Signup Form -->
+					<div id="mc_embed_signup">
+						<form action="http://themeforest.us5.list-manage.com/subscribe/post?u=e59a997f59279826537ee067a&amp;id=50f0dafdb1" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" />
+							<div class="mc-field-group">
+								<input type="email" value="your email address" name="EMAIL" id="mce-EMAIL" />
+							</div>
+							<input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" />
+						</form>
+					</div>
+					<!-- End MailChimp Signup Form -->
+					<div id="footer-contact">
+						<div id="footer-telephone">Telephone: <b>+474-7457-3749</b></div>
+						<div id="footer-mail">Email: <b>example@mail.com</b></div>
+						<div id="footer-skype">Skype: <b>exampleskypeusername</b></div>
+						<div id="footer-address">Address: <b>45 Silent River Street, New York <br />3035 WalBoard Street, New York</b><div style="clear:both"></div></div>	
+					</div>
+					<div id="footer-logo-wrap">
+						<img src="images/footer_logo.png" />
+					</div>
+				</div>
+				<div class="five columns" id="testimonials">
+					<div id="twitter-feed-header">Client Testimonials</div>
+					<div class="testimonials-wrap">
+						It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout structure.
+						<div class="testimonials-author">John Baker, Customer</div>
+					</div>
+					<div class="testimonials-wrap">
+						Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC.
+						<div class="testimonials-author">Mark Smith, Heal CEO</div>
+					</div>
+					<div class="testimonials-wrap">
+						Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC.
+						<div class="testimonials-author">Mark Smith, Heal CEO</div>
+					</div>
+				</div>
+				<br class="clear" />
+				<div class="sixteen columns" id="copyright-info">
+					<div>&copy; Copyright &copy; 2013.Company name All rights reserved.<a target="_blank" href="http://sc.chinaz.com/moban/">&#x7F51;&#x9875;&#x6A21;&#x677F;</a></div>
+					<div id="social-button">
+						<a href="http://www.facebook.com/enter_here_your_data"><div id="facebook-img"></div></a>						
+						<a href="https://twitter.com/enter_here_your_data"><div id="twitter-img"></div></a>						
+						<a href="enter_here_your_data"><div id="rss-img"></div></a>						
+						<a href="http://www.linkedin.com/enter_here_your_data"><div id="linkedin-img"></div></a>						
+						<a href="https://plus.google.com/enter_here_your_data"><div id="google-img"></div></a>					
+					</div>
+				</div>
+			</div>
+			<a href="#to-top" id="back-to-top"></a>
+		</div>
+	</footer>
+	<!-- END FOOTER -->
+<div style="display:none"><script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script></div>
+</body>
+</html>
